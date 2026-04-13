@@ -1,0 +1,14 @@
+{
+  "name": "claude_client_qa_project",
+  "version": "1.0.0",
+  "description": "Hello! Thanks for taking this on. Let me walk you through what I need tested on Swag Labs (saucedemo.com). This is our demo retail storefront and I want full end-to-end coverage before we consider it stable.",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^25.6.0"
+  }
+}
