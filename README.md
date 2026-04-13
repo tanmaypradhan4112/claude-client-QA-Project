@@ -1,6 +1,8 @@
 # Client Brief: Swag Labs E2E Test Requirements
 Hello! Thanks for taking this on. Let me walk you through what I need tested on Swag Labs (saucedemo.com). This is our demo retail storefront and I want full end-to-end coverage before we consider it stable.
 
+Link: https://www.saucedemo.com/
+
 ## 🏢 About the Application
 Swag Labs is a web-based e-commerce store. Users log in, browse products, add them to a cart, and complete a checkout. Simple on the surface — but there are multiple user personas that behave differently, and I want every critical path validated.
 
