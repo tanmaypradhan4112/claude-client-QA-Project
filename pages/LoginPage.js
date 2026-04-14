@@ -10,6 +10,7 @@ export class LoginPage {
         this.usernameInput = loginpage.locator('[data-test="username"]');
         this.passwordInput = loginpage.locator('[data-test="password"]');
         this.loginButton = loginpage.locator('[data-test="login-button"]');
+        this.errorblock = loginpage.locator('[data-test="error"]');
     }
 
     // Method to navigate to login page
