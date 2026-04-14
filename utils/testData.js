@@ -8,13 +8,19 @@ export const testData = {
     },
     credential: {
         password: 'secret_sauce',
+        emptyPassword:""
     },
     username: {
+        emptyUsername: "",
         standard_user: 'standard_user',
         locked_out_user: 'locked_out_user',
         problem_user: 'problem_user',
         performance_glitch_user: 'performance_glitch_user',
         error_user: 'error_user',
         visual_user: 'visual_user'
+    },
+    resultPath:{
+        auth : "test-results/auth/",
+        inventory : "test-results/inventory"
     }
 };
