@@ -89,9 +89,7 @@ Based on the client requirements, the test coverage includes the following areas
 
 ---
 
-### Test Planning
-
-#### Authentication
+### Test Planning - Authentication
 
 **Objective:** Test the authentication for the username & password to login successfully in https://www.saucedemo.com/inventory.html and further proceed with other flows such as Checkout, About, Logout, and Product Page.
 
@@ -152,7 +150,7 @@ Based on the client requirements, the test coverage includes the following areas
 - Without any authentication, try to Navigate user with the following url "https://www.saucedemo.com/inventory.html"
 - Expected: Error is shown in login page "Epic sadface: You can only access '/inventory.html' when you are logged in."
 
-*Negative Scenarios*
+**Negative Scenarios**
 8. User is locked from login
 - Login using username = "locked_out_user" and password = "secret_sauce"
 - Expected: An error is shown "Epic sadface: Sorry, this user has been locked out."
@@ -193,3 +191,79 @@ Based on the client requirements, the test coverage includes the following areas
 | TC_AUTH_10   | Missing Username              | Verify error when username is not provided       | 1. Navigate to Login page(url : "https://www.saucedemo.com/") <br> 2. Leave username blank <br> 3. Enter password <br> 4. Click Login                          | Username: (blank) <br> Password: secret_sauce                                             | Error message reads: "Epic sadface: Username is required"                                 |
 | TC_AUTH_11   | Empty Credentials             | Verify error when both fields are empty          | 1. Navigate to Login page(url : "https://www.saucedemo.com/") 2. Leave username blank <br> 3. Leave password blank <br> 4. Click Login                    | Username: (blank) <br> Password: (blank)                                                  | Error message reads: "Epic sadface: Username is required"                                 |
 
+
+  ### Test Planning - Inventory Page
+
+  **Objective:** Test the Inventory product page (https://www.saucedemo.com/inventory.html) which includes product content (Name, Description, Price, Image), filter, Add to Cart functionality.
+
+  - All products are displayed after login
+  - Products can be sorted (A→Z, Z→A, Price Low→High, Price High→Low)
+  - Each product has a name, description, price, and image
+  - "Add to Cart" button works and updates cart badge count
+
+  **In-Scope:**
+  - Include all users for authentication and navigate to inventory page
+  - Testing the product content
+  - Testing the state change of Shopping Cart badge and Filter
+
+  **Out-of-Scope:**
+  - Performance/load testing
+  - Visual regression testing
+  - API-level authentication testing
+
+  ***Entry Criteria***:
+  - The application must be accessible at https://www.saucedemo.com and https://www.saucedemo.com/inventory.html
+  - All 6 test user credentials must be valid and functional
+  - Playwright environment must be configured and dependencies installed
+
+  ***Pass/Fail Criteria***
+  - Pass Criteria → "A test case PASSES when actual result = expected result"
+  - Fail Criteria → "A test case FAILS when actual result ≠ expected result, or an unhandled exception occurs, or an assertion timeout is reached"
+
+  ***Pass Criteria***
+  UserName = "standard_user" and Password = "secret_sauce"
+  UserName = "performance_glitch_user" and Password = "secret_sauce" (Note: performance_glitch_user logs in and uses the inventory page functionally — but with delays.)
+
+  1. Validate all the products are visible in the Inventory page
+  Expectation: All the Product must be present in the inventory with correct image, price, title and description
+
+  2. Validate the Filter functionality
+  Expectation: Upon click different option, the product should change the order
+  - A→Z: First product name alphabetically appears first, last appears last
+  - Z→A: Last product name alphabetically appears first
+  - Price Low→High: Lowest priced product appears first
+  - Price High→Low: Highest priced product appears first
+
+  3. Validate Add to Cart and Remove button state change and cart badge
+   Expectation:
+   - Clicking "Add to cart" changes button to "Remove" and badge increments by 1
+   - Clicking "Remove" changes button back to "Add to cart" and badge decrements by 1
+   - Adding all 6 products results in badge showing 6
+   - Removing all 6 products results in badge disappearing
+
+
+  ***Negative Scenarios***
+  1. Validate product images with problem_user
+   Username: problem_user | Password: secret_sauce
+   Expectation: Product images do NOT match their respective product 
+   titles — all images render as the same incorrect image.
+  
+  2. Validate Add to Cart with error_user
+   Username: error_user | Password: secret_sauce
+   Expectation: "Add to Cart" button interaction produces a functional 
+   error and does not update the cart badge correctly.
+
+  3. Validate inventory layout with visual_user
+   Username: visual_user | Password: secret_sauce
+   Expectation: Page loads and products are visible but visual/layout 
+   defects are present.
+
+
+  ***Roles & Responsibilites***:
+  - QA : Tanmay Pradhan
+
+
+  **Exit Criteria***:
+  - All test cases have been executed at least once
+  - All critical/high priority test cases pass with zero failures
+  - Test results and evidence are documented and reviewed
