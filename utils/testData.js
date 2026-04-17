@@ -58,7 +58,7 @@ export const testData = {
         },
     ],
     resultPath:{
-        auth : "test-results/auth/",
-        inventory : "test-results/inventory"
+        auth : "utils/test-results/auth/",
+        inventory : "utils/test-results/inventory"
     }
 };
