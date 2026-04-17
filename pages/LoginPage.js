@@ -24,4 +24,8 @@ export class LoginPage {
         await this.passwordInput.fill(password);
         await this.loginButton.click();
     }
+
+    async Takescreenshot(path, name) {
+        await this.loginpage.screenshot({ path: `${path}${name}.png`, fullPage: true });
+    }
 }
