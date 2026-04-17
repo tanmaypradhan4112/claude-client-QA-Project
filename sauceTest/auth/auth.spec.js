@@ -1,7 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../../pages/LoginPage';
-import { InventoryPage} from '../../pages/InventoryPage';
+import { InventoryPage } from '../../pages/InventoryPage';
 import { testData } from '../../utils/testdata';
 
 test.beforeEach(async ({ page }) => {
@@ -9,25 +9,34 @@ test.beforeEach(async ({ page }) => {
     await page.goto(testData.url.loginUrl);
 });
 
-
-
 test.describe('Authentication Postive Scenarios', () => {
 
-    // TC_AUTH_01 - Verify login with valid credentials
-    test('TC_AUTH_01 - Valid Login', async ({ page }) => {
-        const loginPage = new LoginPage(page);
-        const inventoryPage = new InventoryPage(page);
+    // PARAMETERIZED TEST: Handles TC_AUTH_01, 04, 05, 06 in one block
+    const validUsers = [
+        { id: '01', user: testData.username.standard_user},
+        { id: '04', user: testData.username.problem_user},
+        { id: '05', user: testData.username.error_user,},
+        { id: '06', user: testData.username.visual_user},
+    ];
 
-        await loginPage.login(testData.username.standard_user, testData.credential.password);
+    for (const user of validUsers) {
+        test(`Valid Login of ${user.user}`, async ({ page }) => {
+            const loginPage = new LoginPage(page);
+            const inventoryPage = new InventoryPage(page);
 
-        // Expect URL to be inventory page URL
-        await expect(page).toHaveURL(testData.url.inventoryUrl);
-        // Expect title to be "Products"
-        await expect(inventoryPage.inventorypageTitle).toHaveText('Products');
+            // Login with the username and Password
+            await loginPage.login(user.user, testData.credential.password);
 
-        // Screenshot after successful login
-        await page.screenshot({ path: `${testData.resultPath.auth}TC_AUTH_01_${Date.now()}.png`, fullPage: true });
-    });
+            // Expect URL to be inventory page URL
+            await expect(page).toHaveURL(testData.url.inventoryUrl);
+
+            // Expect title to be "Products"
+            await expect(inventoryPage.inventorypageTitle).toHaveText('Products');
+
+            // Screenshot after successful login
+            await loginPage.Takescreenshot(testData.resultPath.auth, `TC_AUTH_${user.id}`);
+        });
+    }
 
     // TC_AUTH_02 - Verify end-to-end login and logout functionality
     test('TC_AUTH_02 - End-to-End Login and Logout', async ({ page }) => {
@@ -49,71 +58,24 @@ test.describe('Authentication Postive Scenarios', () => {
         await expect(loginPage.usernameInput).toBeVisible();
 
         // Screenshot after successful login & logout
-        await page.screenshot({ path: `${testData.resultPath.auth}TC_AUTH_02_${Date.now()}.png`, fullPage: true });
+        await loginPage.Takescreenshot(testData.resultPath.auth, "TC_AUTH_02");
     });
 
     // TC_AUTH_03 - Verify login with delayed response user
     test('TC_AUTH_03 - Delayed Response Login', async ({ page }) => {
-        test.setTimeout(30000); // 30 seconds
         const loginPage = new LoginPage(page);
         const inventoryPage = new InventoryPage(page);
         await loginPage.login(testData.username.performance_glitch_user, testData.credential.password);
 
         // Expect URL to be inventory page URL
         await expect(page).toHaveURL(testData.url.inventoryUrl, { timeout: 15000 });
+
         // Expect title to be "Products"
         await expect(inventoryPage.inventorypageTitle).toHaveText('Products');
 
         // Screenshot after successful login
-        await page.screenshot({ path: `${testData.resultPath.auth}TC_AUTH_03_${Date.now()}.png`, fullPage: true });
+        await loginPage.Takescreenshot(testData.resultPath.auth, "TC_AUTH_03");
     });
-
-    // TC_AUTH_04 - Verify login with UI issue user
-    test('TC_AUTH_04 - UI Issue User Login', async ({ page }) => {
-        const loginPage = new LoginPage(page);
-        const inventoryPage = new InventoryPage(page);
-        await loginPage.login(testData.username.problem_user, testData.credential.password);
-
-        // Expect URL to be inventory page URL
-        await expect(page).toHaveURL(testData.url.inventoryUrl);
-        // Expect title to be "Products"
-        await expect(inventoryPage.inventorypageTitle).toHaveText('Products');
-
-        // Screenshot after successful login
-        await page.screenshot({ path: `${testData.resultPath.auth}TC_AUTH_04_${Date.now()}.png`, fullPage: true });
-    });
-
-    // TC_AUTH_05 - Verify login with error user
-    test('TC_AUTH_05 - Error User Login', async ({ page }) => {
-        const loginPage = new LoginPage(page);
-        const inventoryPage = new InventoryPage(page);
-        await loginPage.login(testData.username.error_user, testData.credential.password);
-
-        // Expect URL to be inventory page URL
-        await expect(page).toHaveURL(testData.url.inventoryUrl);
-        // Expect title to be "Products"
-        await expect(inventoryPage.inventorypageTitle).toHaveText('Products');
-
-        // Screenshot after successful login
-        await page.screenshot({ path: `${testData.resultPath.auth}TC_AUTH_05_${Date.now()}.png`, fullPage: true });
-    });
-
-    // TC_AUTH_06 - Verify login with visual defect user
-    test('TC_AUTH_06 - Visual Defect User Login', async ({ page }) => {
-        const loginPage = new LoginPage(page);
-        const inventoryPage = new InventoryPage(page);
-
-        await loginPage.login(testData.username.visual_user, testData.credential.password);
-
-        // Expect URL to be inventory page URL
-        await expect(page).toHaveURL(testData.url.inventoryUrl);
-        // Expect title to be "Products"
-        await expect(inventoryPage.inventorypageTitle).toHaveText('Products');
-
-        // Screenshot after successful login
-        await page.screenshot({ path: `${testData.resultPath.auth}TC_AUTH_06_${Date.now()}.png`, fullPage: true });
-    });
-
 });
 
 
@@ -128,18 +90,18 @@ test.describe('Authentication Negative Scenarios', () => {
         await expect(loginPage.errorblock).toHaveText("Epic sadface: Sorry, this user has been locked out.");
 
         // Screenshot after error pop up
-        await page.screenshot({ path: `${testData.resultPath.auth}TC_AUTH_08_${Date.now()}.png`, fullPage: true });
+        await loginPage.Takescreenshot(testData.resultPath.auth, "TC_AUTH_08");
     });
 
     // TC_AUTH_09 - Verify error when password is not provided
     test("TC_AUTH_09 - Password is not provided", async ({ page }) => {
         const loginPage = new LoginPage(page);
-        await loginPage.login(testData.username.standard_user,testData.credential.emptyPassword);
+        await loginPage.login(testData.username.standard_user, testData.credential.emptyPassword);
 
         await expect(loginPage.errorblock).toHaveText("Epic sadface: Password is required");
 
         // Screenshot after error pop up
-        await page.screenshot({ path: `${testData.resultPath.auth}TC_AUTH_09_${Date.now()}.png`, fullPage: true });
+        await loginPage.Takescreenshot(testData.resultPath.auth, "TC_AUTH_09");
     });
 
     // TC_AUTH_10 - Verify error when username is not provided
@@ -150,7 +112,7 @@ test.describe('Authentication Negative Scenarios', () => {
         await expect(loginPage.errorblock).toHaveText("Epic sadface: Username is required");
 
         // Screenshot after error pop up
-        await page.screenshot({ path: `${testData.resultPath.auth}TC_AUTH_10_${Date.now()}.png`, fullPage: true });
+        await loginPage.Takescreenshot(testData.resultPath.auth, "TC_AUTH_10");
     });
 
     // TC_AUTH_11 - Verify error when both username and password are not provided
@@ -161,7 +123,7 @@ test.describe('Authentication Negative Scenarios', () => {
         await expect(loginPage.errorblock).toHaveText("Epic sadface: Username is required");
 
         // Screenshot after error pop up
-        await page.screenshot({ path: `${testData.resultPath.auth}TC_AUTH_11_${Date.now()}.png`, fullPage: true });
+        await loginPage.Takescreenshot(testData.resultPath.auth, "TC_AUTH_11");
     });
 });
 
@@ -177,7 +139,7 @@ test.describe('Authentication Edge Case', () => {
         await expect(loginPage.errorblock).toHaveText("Epic sadface: You can only access '/inventory.html' when you are logged in.");
 
         // Screenshot after error pop up
-        await page.screenshot({ path: `${testData.resultPath.auth}TC_AUTH_07_${Date.now()}.png`, fullPage: true });
+        await loginPage.Takescreenshot(testData.resultPath.auth, "TC_AUTH_07");
     });
 
 });
