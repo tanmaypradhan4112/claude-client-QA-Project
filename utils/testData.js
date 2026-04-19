@@ -60,5 +60,8 @@ export const testData = {
     resultPath:{
         auth : "utils/test-results/auth/",
         inventory : "utils/test-results/inventory/"
+    },
+    __screenshot__:{
+        idealPageImagePath : "/utils/IdealInventoryPage.png"
     }
 };
