@@ -8,15 +8,8 @@ export class InventoryPage {
         this.logoutlink = inventorypage.locator('[data-test="logout-sidebar-link"]');
         this.inventorypageTitle = inventorypage.locator('[data-test="title"]');
 
-        // Filter
-        this.filter = inventorypage.locator('[data-test="product-sort-container"]');
-
         // Shop Cart icon / badge
         this.cartbadge = inventorypage.locator('[data-test="shopping-cart-badge"]');
-
-        // Add-to-cart & Remove Button
-        this.addToCart = inventorypage.locator('[data-test^="add-to-cart"]');
-        this.remove = inventorypage.locator('[data-test^="remove"]');
 
         // Product
         this.product_card = inventorypage.locator('[data-test="inventory-item"]');
@@ -27,11 +20,6 @@ export class InventoryPage {
 
         // Filter component
         this.filter_comp = inventorypage.locator('[data-test="product-sort-container"]')
-    }
-
-    // Method to navigate to inventory page    
-    async navigateToInventoryPage() {
-        await this.inventorypage.goto(testData.url.inventoryUrl);
     }
 
     // Method to Logut via Burger Menu
