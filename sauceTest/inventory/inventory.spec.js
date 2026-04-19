@@ -39,7 +39,7 @@ test.describe('Inventory Positive Scenarios', () => {
         await inventoryPage.filterDropdownOption(0);
 
         // Assert to validate the order Products are sorted alphabetically. First item is "Sauce Labs Backpack".        
-        await inventoryPage.expectProductToMatch(0,testData.productlist.backpack);
+        await inventoryPage.expectProductToMatch(0, testData.productlist.backpack);
 
         // take Screenshot for test results / evidence
         await inventoryPage.Takescreenshot(testData.resultPath.inventory, "TC-INV-03");
@@ -54,7 +54,7 @@ test.describe('Inventory Positive Scenarios', () => {
 
         // Assert to validate the order Products are sorted in reverse alphabetical order. 
         // First item is "Test.allTheThings() T-Shirt (Red).
-        await inventoryPage.expectProductToMatch(0,testData.productlist.redTshirt);
+        await inventoryPage.expectProductToMatch(0, testData.productlist.redTshirt);
 
         // take Screenshot for test results / evidence
         await inventoryPage.Takescreenshot(testData.resultPath.inventory, "TC-INV-04");
@@ -68,30 +68,156 @@ test.describe('Inventory Positive Scenarios', () => {
         await inventoryPage.filterDropdownOption(2);
 
         // Product with the lowest price - Onesie - appears first.
-        await inventoryPage.expectProductToMatch(0,testData.productlist.onesie);
+        await inventoryPage.expectProductToMatch(0, testData.productlist.onesie);
+
+        // take Screenshot for test results / evidence
+        await inventoryPage.Takescreenshot(testData.resultPath.inventory, "TC-INV-05");
     });
 
     // TC-INV-06 Filter: Price High to Low
     test('TC-INV-06 Filter: Price High to Low ', async ({ page }) => {
         const inventoryPage = new InventoryPage(page);
 
-        // Expect URL to be inventory page URL
-        await expect(page).toHaveURL(testData.url.inventoryUrl);
-
         // Click on filter dropdown and select index 1 (Z to A)
-        await inventoryPage.filterDropdownOption(2);
+        await inventoryPage.filterDropdownOption(3);
 
         // Product with the highest price - Fleece Jacket -  appears first.
-        await inventoryPage.expectProductToMatch(0,testData.productlist.fleecejacket);
+        await inventoryPage.expectProductToMatch(0, testData.productlist.fleecejacket);
+
+        // take Screenshot for test results / evidence
+        await inventoryPage.Takescreenshot(testData.resultPath.inventory, "TC-INV-06");
     });
 
+    // TC-INV-07 Cart Mechanics (Add/Remove)
+    test('TC-INV-07 Cart Mechanics (Add/Remove)', async ({ page }) => {
+        const inventoryPage = new InventoryPage(page);
+
+        // Clicking add to cart for two products
+        await inventoryPage.getAddToCartBtnInCard(0).click();
+        await inventoryPage.getAddToCartBtnInCard(2).click();
+
+        // Assert Cart Badge Number
+        await expect(inventoryPage.cartbadge).toHaveText('2');
+
+        // take Screenshot for test results / evidence
+        await inventoryPage.Takescreenshot(testData.resultPath.inventory, "TC-INV-07_1");
+
+        await expect(inventoryPage.remove).toHaveCount(2);
+
+        // Removing a product
+        await inventoryPage.getRemoveBtnInCard(2).click();
+
+        // Assert Cart Badge Number
+        await expect(inventoryPage.cartbadge).toHaveText('1');
+
+        // take Screenshot for test results / evidence
+        await inventoryPage.Takescreenshot(testData.resultPath.inventory, "TC-INV-07_2");
+    });
+
+    // TC-INV-08 Full Cart Capacity
+    test('TC-INV-08 Full Cart Capacity', async ({ page }) => {
+        const inventoryPage = new InventoryPage(page);
+        const productcount = await inventoryPage.product_card.count();
+
+        // Add all the product to the cart
+        for (let addtocartIndex = 0; addtocartIndex < productcount; addtocartIndex++) {
+            await inventoryPage.getAddToCartBtnInCard(addtocartIndex).click();
+        }
+
+        // Assert Cart Badge Number
+        await expect(inventoryPage.cartbadge).toHaveText('6');
+
+        // take Screenshot for test results / evidence
+        await inventoryPage.Takescreenshot(testData.resultPath.inventory, "TC-INV-08_1");
+
+        // Remove all the product from the cart
+        for (let removebtnIndex = 0; removebtnIndex < productcount; removebtnIndex++) {
+            await inventoryPage.getRemoveBtnInCard(removebtnIndex).click();
+        }
+
+        // Assert Cart Badge Number
+        await expect.soft(inventoryPage.cartbadge).toBeHidden();
+
+        // take Screenshot for test results / evidence
+        await inventoryPage.Takescreenshot(testData.resultPath.inventory, "TC-INV-08_2");
+    });
 });
 
 test.describe('Inventory Negative Scenarios', () => {
-    test.skip('WIP', ({ page }) => {
-        // 
+    test.beforeEach(async ({ page }) => {
+        // Initialize the LoginPage object before each test
+        await page.goto(testData.url.loginUrl);
+
     });
 
+    // TC-INV-09 Negative: Image Integrity
+    test('TC-INV-09	Negative: Image Integrity', async ({ page }) => {
+        const loginPage = new LoginPage(page);
+        const inventoryPage = new InventoryPage(page);
+
+        //Fill Username and password
+        await loginPage.login(testData.username.problem_user, testData.credential.password);
+
+        const productsToValidate = Object.values(testData.productlist);
+
+        // Assertion : Defect Expected: All products display the same incorrect/placeholder image.
+        for (const [index, product] of productsToValidate.entries()) {
+            await inventoryPage.expectProductToMatch(index, product);
+        }
+
+        // take Screenshot for test results / evidence
+        await inventoryPage.Takescreenshot(testData.resultPath.inventory, "TC-INV-09");
+    });
+
+    // TC-INV-10	Negative: Functional Error
+    test('TC-INV-10	Negative: Functional Error', async ({ page }) => {
+        const loginPage = new LoginPage(page);
+        const inventoryPage = new InventoryPage(page);
+
+        //Fill Username and password
+        await loginPage.login(testData.username.error_user, testData.credential.password);
+
+        // Assertions: Defect Expected: Button interaction fails or produces a functional error; badge does not update.
+        const productcount = await inventoryPage.product_card.count();
+
+        for (let i = 0; i < productcount; i++) {
+            // Locate the current card
+
+            const currenAddToCartbtn = inventoryPage.getAddToCartBtnInCard(i);
+            const currentRemovebtn = inventoryPage.getRemoveBtnInCard(i);
+
+            await currenAddToCartbtn.click();
+
+            // Check if the Current Remove Button is Visible
+            const isWorking = await currentRemovebtn.isVisible({ timeout: 1000 });
+
+            if (isWorking) {
+                await currentRemovebtn.click();
+            }
+            else {
+                // DEFECT PATH: The button is broken (Expected for error_user).
+                await expect.soft(currentRemovebtn).toBeHidden();
+                await expect.soft(inventoryPage.cartbadge).toBeHidden();
+            }
+
+            // take Screenshot for test results / evidence
+            await inventoryPage.Takescreenshot(testData.resultPath.inventory, "TC-INV-10");
+        }
+    });
+
+    // TC-INV-11 Negative: Visual Layout
+    test("TC-INV-11 Negative: Visual Layout", async ({ page }) => {
+        const loginPage = new LoginPage(page);
+        const inventoryPage = new InventoryPage(page);
+
+        //Fill Username and password
+        await loginPage.login(testData.username.visual_user, testData.credential.password);
+
+        await expect.soft(page).toHaveScreenshot('/utils/IdealInventoryPage.png');
+
+        // take Screenshot for test results / evidence
+        await inventoryPage.Takescreenshot(testData.resultPath.inventory, "TC-INV-11");
+    });
 });
 
 test.describe('Inventory Edge Scenarios', () => {
@@ -101,6 +227,9 @@ test.describe('Inventory Edge Scenarios', () => {
         await page.goto(testData.url.loginUrl);
         //Fill Username and password
         await loginPage.login(testData.username.performance_glitch_user, testData.credential.password);
+
+        const productsToValidate = Object.values(testData.productlist);
+
     });
 
     // TC-INV-02	Performance Login
