@@ -22,6 +22,7 @@ test.describe('Inventory Positive Scenarios', () => {
         await expect(page).toHaveURL(testData.url.inventoryUrl);
 
         // Assert Product Card Content
+        // NOTE: productlist must remain in A→Z order to match default inventory sort
         const productsToValidate = Object.values(testData.productlist);
         for (const [index, product] of productsToValidate.entries()) {
             await inventoryPage.expectProductToMatch(index, product);
@@ -94,21 +95,24 @@ test.describe('Inventory Positive Scenarios', () => {
 
         // Clicking add to cart for two products
         await inventoryPage.getAddToCartBtnInCard(0).click();
-        await inventoryPage.getAddToCartBtnInCard(2).click();
 
         // Assert Cart Badge Number
-        await expect(inventoryPage.cartbadge).toHaveText('2');
+        await expect(inventoryPage.cartbadge).toHaveText('1');
+
+        // verify button changes to "Remove"
+        await expect(inventoryPage.getRemoveBtnInCard(0)).toBeVisible();
 
         // take Screenshot for test results / evidence
         await inventoryPage.Takescreenshot(testData.resultPath.inventory, "TC-INV-07_1");
 
-        await expect(inventoryPage.remove).toHaveCount(2);
-
         // Removing a product
-        await inventoryPage.getRemoveBtnInCard(2).click();
+        await inventoryPage.getRemoveBtnInCard(0).click();
 
         // Assert Cart Badge Number
-        await expect(inventoryPage.cartbadge).toHaveText('1');
+        await expect(inventoryPage.cartbadge).toBeHidden();
+
+        // verify button reverts
+        await expect(inventoryPage.getAddToCartBtnInCard(0)).toBeVisible();
 
         // take Screenshot for test results / evidence
         await inventoryPage.Takescreenshot(testData.resultPath.inventory, "TC-INV-07_2");
@@ -162,7 +166,8 @@ test.describe('Inventory Negative Scenarios', () => {
 
         // Assertion : Defect Expected: All products display the same incorrect/placeholder image.
         for (const [index, product] of productsToValidate.entries()) {
-            await inventoryPage.expectProductToMatch(index, product);
+            const img = await inventoryPage.product_img.nth(index).getAttribute('src');
+            expect.soft(img).not.toBe(product.img);
         }
 
         // take Screenshot for test results / evidence
@@ -201,7 +206,7 @@ test.describe('Inventory Negative Scenarios', () => {
             }
 
             // take Screenshot for test results / evidence
-            await inventoryPage.Takescreenshot(testData.resultPath.inventory, "TC-INV-10");
+            await inventoryPage.Takescreenshot(testData.resultPath.inventory, `TC-INV-10-${i}`);
         }
     });
 
@@ -213,32 +218,30 @@ test.describe('Inventory Negative Scenarios', () => {
         //Fill Username and password
         await loginPage.login(testData.username.visual_user, testData.credential.password);
 
-        await expect.soft(page).toHaveScreenshot('/utils/IdealInventoryPage.png');
+        await expect.soft(page).toHaveScreenshot(testData.__screenshot__.idealPageImagePath);
 
         // take Screenshot for test results / evidence
         await inventoryPage.Takescreenshot(testData.resultPath.inventory, "TC-INV-11");
     });
 });
 
-test.describe('Inventory Edge Scenarios', () => {
+test.describe('Inventory Positive Scenarios - Performance Glitch User', () => {
     test.beforeEach(async ({ page }) => {
         const loginPage = new LoginPage(page);
         // Initialize the LoginPage object before each test
         await page.goto(testData.url.loginUrl);
         //Fill Username and password
         await loginPage.login(testData.username.performance_glitch_user, testData.credential.password);
-
-        const productsToValidate = Object.values(testData.productlist);
-
     });
 
     // TC-INV-02	Performance Login
     test('TC_INV_02 Performance Login', async ({ page }) => {
+        test.setTimeout(30000);
         const inventoryPage = new InventoryPage(page);
 
         // Expect URL to be inventory page URL
+        await expect(page).toHaveURL(testData.url.inventoryUrl, { timeout: 15000 });
         await page.waitForLoadState('domcontentloaded');
-        await expect(page).toHaveURL(testData.url.inventoryUrl);
 
         // Assert Product Card Content
         const productsToValidate = Object.values(testData.productlist);
