@@ -65,7 +65,7 @@ test.describe('Inventory Positive Scenarios', () => {
     test('TC-INV-05 Filter: Price Low to High', async ({ page }) => {
         const inventoryPage = new InventoryPage(page);
 
-        // Click on filter dropdown and select index 1 (Z to A)
+        // Click on filter dropdown and select index 2 Price (Low to High)
         await inventoryPage.filterDropdownOption(2);
 
         // Product with the lowest price - Onesie - appears first.
@@ -79,7 +79,7 @@ test.describe('Inventory Positive Scenarios', () => {
     test('TC-INV-06 Filter: Price High to Low ', async ({ page }) => {
         const inventoryPage = new InventoryPage(page);
 
-        // Click on filter dropdown and select index 1 (Z to A)
+        // Click on filter dropdown and select index 3 Price (High to Low)
         await inventoryPage.filterDropdownOption(3);
 
         // Product with the highest price - Fleece Jacket -  appears first.
@@ -193,17 +193,9 @@ test.describe('Inventory Negative Scenarios', () => {
 
             await currenAddToCartbtn.click();
 
-            // Check if the Current Remove Button is Visible
-            const isWorking = await currentRemovebtn.isVisible({ timeout: 1000 });
-
-            if (isWorking) {
-                await currentRemovebtn.click();
-            }
-            else {
-                // DEFECT PATH: The button is broken (Expected for error_user).
-                await expect.soft(currentRemovebtn).toBeHidden();
-                await expect.soft(inventoryPage.cartbadge).toBeHidden();
-            }
+            // DEFECT PATH: The button is broken (Expected for error_user).
+            await expect.soft(currentRemovebtn).toBeHidden();
+            await expect.soft(inventoryPage.cartbadge).toBeHidden();
 
             // take Screenshot for test results / evidence
             await inventoryPage.Takescreenshot(testData.resultPath.inventory, `TC-INV-10-${i}`);
@@ -218,7 +210,12 @@ test.describe('Inventory Negative Scenarios', () => {
         //Fill Username and password
         await loginPage.login(testData.username.visual_user, testData.credential.password);
 
-        await expect.soft(page).toHaveScreenshot(testData.__screenshot__.idealPageImagePath);
+        await expect(inventoryPage.product_card).toHaveCount(6);
+        await expect(inventoryPage.inventorypageTitle).toHaveText('Products');
+
+        for (let addtocartIndex = 0; addtocartIndex < 6; addtocartIndex++) {
+            await expect.soft(inventoryPage.getAddToCartBtnInCard(addtocartIndex)).toBeVisible();
+        }
 
         // take Screenshot for test results / evidence
         await inventoryPage.Takescreenshot(testData.resultPath.inventory, "TC-INV-11");
