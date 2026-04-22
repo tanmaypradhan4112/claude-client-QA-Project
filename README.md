@@ -244,21 +244,92 @@ Based on the client requirements, the test coverage includes the following areas
 
   ***Negative Scenarios***
   1. Validate product images with problem_user
-   Username: problem_user | Password: secret_sauce
-   Expectation: Product images do NOT match their respective product 
+   - Username: problem_user | Password: secret_sauce
+   - Expectation: Product images do NOT match their respective product 
    titles — all images render as the same incorrect image.
   
   2. Validate Add to Cart with error_user
-   Username: error_user | Password: secret_sauce
-   Expectation: "Add to Cart" button interaction produces a functional 
+   - Username: error_user | Password: secret_sauce
+   - Expectation: "Add to Cart" button interaction produces a functional 
    error and does not update the cart badge correctly.
 
   3. Validate inventory layout with visual_user
-   Username: visual_user | Password: secret_sauce
-   Expectation: Page loads and products are visible but visual/layout 
+   - Username: visual_user | Password: secret_sauce
+   - Expectation: Page loads and products are visible but visual/layout 
    defects are present.
 
 
+  ***Roles & Responsibilites***:
+  - QA : Tanmay Pradhan
+
+
+  **Exit Criteria***:
+  - All test cases have been executed at least once
+  - All critical/high priority test cases pass with zero failures
+  - Test results and evidence are documented and reviewed
+
+
+  ### Test Planning - Product Details Page
+
+  **Objective:** Test the Inventory product details page (https://www.saucedemo.com/inventory-item.html?id) which includes product content (Name, Description, Price, Image) and Add to Cart / Remove button functionality.
+
+  - Clicking a product navigates to its detail page
+  - Product info matches what was on the inventory page
+  - "Add to Cart" / "Remove" toggle works from detail page
+  - "Back to products" button works
+
+   **In-Scope:**
+  - Users under test: standard_user, performance_glitch_user, problem_user, error_user, visual_user for validation of product details page
+  - Testing the product details page content
+  - Testing the state change of Shopping Cart badge and Back to products button
+
+  **Out-of-Scope:**
+  - Performance/load testing
+  - Visual regression testing
+  - API-level authentication testing
+
+  ***Entry Criteria***:
+  - The application must be accessible at https://www.saucedemo.com and https://www.saucedemo.com/inventory.html and https://www.saucedemo.com/inventory-item.html?id
+  - All 6 test user credentials must be valid and functional
+  - Playwright environment must be configured and dependencies installed
+
+  Pass Criteria → "A test case PASSES when actual result = expected result"
+  Fail Criteria → "A test case FAILS when actual result ≠ expected result, 
+  or an unhandled exception occurs, or an assertion timeout is reached"
+
+  ***Pass Criteria***
+  UserName = "standard_user" and Password = "secret_sauce"
+  UserName = "performance_glitch_user" and Password = "secret_sauce" (Note: performance_glitch_user logs in and uses the inventory page functionally — but with delays.)
+
+  1. Click a product on the inventory page,verify navigation to detail page, verify product name, description, price, and image match inventory page values.
+  Expectation: 
+  - Clicking a product on the inventory page navigates to https://www.saucedemo.com/inventory-item.html and the product name heading is visible.
+  - Product name, description, price, and image on the detail page exactly match the values shown on the inventory page for the same product.
+
+  2. Validate state change of `Add to Cart` and `Remove` button in product details page
+  Expectation: Clicking "Add to cart" changes button to "Remove" and cart badge increments to 1. Clicking "Remove" reverts button to "Add to cart" and badge disappears.
+
+  3. Validate `Back to products` button works
+  Expectation: Clicking "Back to products" redirects to https://www.saucedemo.com/inventory.html and "Products" heading is visible.
+
+  ***Negative Scenarios***
+  1. Validate products details page and content using "problem_user"
+  - Username: problem_user | Password: secret_sauce
+  - Expectation: Product info matches what was on the inventory page must having matching content
+
+  2. Validate state change of `Add to Cart` and `Remove` button in product details page using "error_user"
+  - Username: error_user | Password: secret_sauce
+  - Expectation: Funcational error in state change for few products
+
+  3. Validate product details page and content using "visual_user"
+  - Username: visual_user | Password: secret_sauce
+   - Expectation: Page loads and products are visible but visual/layout 
+   defects are present.
+
+   ***Edge Case Scenarios***
+   1. Direct URL (https://www.saucedemo.com/inventory-item.html?id) access to product detail page without login
+   Expectation : Error is shown "Epic sadface: You can only access '/inventory-item.html' when you are logged in."
+   
   ***Roles & Responsibilites***:
   - QA : Tanmay Pradhan
 
