@@ -282,6 +282,7 @@ Based on the client requirements, the test coverage includes the following areas
   - Users under test: standard_user, performance_glitch_user, problem_user, error_user, visual_user for validation of product details page
   - Testing the product details page content
   - Testing the state change of Shopping Cart badge and Back to products button
+  - Validate navigation from inventory page to product detail page via product click
 
   **Out-of-Scope:**
   - Performance/load testing
@@ -301,25 +302,27 @@ Based on the client requirements, the test coverage includes the following areas
   UserName = "standard_user" and Password = "secret_sauce"
   UserName = "performance_glitch_user" and Password = "secret_sauce" (Note: performance_glitch_user logs in and uses the inventory page functionally — but with delays.)
 
-  1. Click a product on the inventory page,verify navigation to detail page, verify product name, description, price, and image match inventory page values.
-  Expectation: 
-  - Clicking a product on the inventory page navigates to https://www.saucedemo.com/inventory-item.html and the product name heading is visible.
-  - Product name, description, price, and image on the detail page exactly match the values shown on the inventory page for the same product.
+  1. Validate navigation to product detail page
+  Expectation: Clicking a product navigates to https://www.saucedemo.com/inventory-item.html?id=[n] and product name heading is visible.
 
-  2. Validate state change of `Add to Cart` and `Remove` button in product details page
+  2. Validate product detail page content matches inventory page
+  Expectation: After navigating to the detail page of a product, the displayed name, description, price, and image src match the values stored in testData.productlist for that product. All four fields must be verified for at least one product.
+
+  3. Validate state change of `Add to Cart` and `Remove` button in product details page
   Expectation: Clicking "Add to cart" changes button to "Remove" and cart badge increments to 1. Clicking "Remove" reverts button to "Add to cart" and badge disappears.
 
-  3. Validate `Back to products` button works
-  Expectation: Clicking "Back to products" redirects to https://www.saucedemo.com/inventory.html and "Products" heading is visible.
+  4. Validate `Back to products` button works
+  Expectation: Clicking "Back to products" redirects to https://www.saucedemo.com/inventory.html and "Products" heading is visible. 
+  Additonal Expectation: Add a product and the Cart badge count goes to 1. Cart badge count persists after returning to inventory page.
 
   ***Negative Scenarios***
   1. Validate products details page and content using "problem_user"
   - Username: problem_user | Password: secret_sauce
-  - Expectation: Product info matches what was on the inventory page must having matching content
+  - Expectation: Expectation: Product name, description, and price match inventory values but product image does NOT match — same incorrect/placeholder image defect from inventory page is present on detail page.
 
   2. Validate state change of `Add to Cart` and `Remove` button in product details page using "error_user"
   - Username: error_user | Password: secret_sauce
-  - Expectation: Funcational error in state change for few products
+  - Expectation: "Add to Cart" button click does not update the cart badge for one or more products — badge remains hidden after interaction.
 
   3. Validate product details page and content using "visual_user"
   - Username: visual_user | Password: secret_sauce
@@ -327,12 +330,11 @@ Based on the client requirements, the test coverage includes the following areas
    defects are present.
 
    ***Edge Case Scenarios***
-   1. Direct URL (https://www.saucedemo.com/inventory-item.html?id) access to product detail page without login
+   1. Direct URL (URL: https://www.saucedemo.com/inventory-item.html?id=1) access to product detail page without login
    Expectation : Error is shown "Epic sadface: You can only access '/inventory-item.html' when you are logged in."
    
   ***Roles & Responsibilites***:
   - QA : Tanmay Pradhan
-
 
   **Exit Criteria***:
   - All test cases have been executed at least once
