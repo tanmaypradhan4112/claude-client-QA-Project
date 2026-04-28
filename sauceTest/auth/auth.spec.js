@@ -1,8 +1,8 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { LoginPage } from '../../pages/LoginPage';
-import { InventoryPage } from '../../pages/InventoryPage';
-import { testData } from '../../utils/testdata';
+import { LoginPage } from '../../pages/LoginPage.js';
+import { InventoryPage } from '../../pages/InventoryPage.js';
+import { testData } from '../../testData.js';
 
 test.beforeEach(async ({ page }) => {
     // Initialize the LoginPage object before each test

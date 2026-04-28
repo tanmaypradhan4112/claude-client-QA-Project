@@ -3,7 +3,7 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../../pages/LoginPage';
 import { InventoryPage } from '../../pages/InventoryPage';
-import { testData } from '../../utils/testdata';
+import { testData } from '../../testData.js';
 
 test.describe('Inventory Positive Scenarios', () => {
     test.beforeEach(async ({ page }) => {
