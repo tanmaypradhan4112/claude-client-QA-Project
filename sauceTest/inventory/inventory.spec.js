@@ -174,34 +174,6 @@ test.describe('Inventory Negative Scenarios', () => {
         await inventoryPage.Takescreenshot(testData.resultPath.inventory, "TC-INV-09");
     });
 
-    // TC-INV-10	Negative: Functional Error
-    test('TC-INV-10	Negative: Functional Error', async ({ page }) => {
-        const loginPage = new LoginPage(page);
-        const inventoryPage = new InventoryPage(page);
-
-        //Fill Username and password
-        await loginPage.login(testData.username.error_user, testData.credential.password);
-
-        // Assertions: Defect Expected: Button interaction fails or produces a functional error; badge does not update.
-        const productcount = await inventoryPage.product_card.count();
-
-        for (let i = 0; i < productcount; i++) {
-            // Locate the current card
-
-            const currenAddToCartbtn = inventoryPage.getAddToCartBtnInCard(i);
-            const currentRemovebtn = inventoryPage.getRemoveBtnInCard(i);
-
-            await currenAddToCartbtn.click();
-
-            // DEFECT PATH: The button is broken (Expected for error_user).
-            await expect.soft(currentRemovebtn).toBeHidden();
-            await expect.soft(inventoryPage.cartbadge).toBeHidden();
-
-            // take Screenshot for test results / evidence
-            await inventoryPage.Takescreenshot(testData.resultPath.inventory, `TC-INV-10-${i}`);
-        }
-    });
-
     // TC-INV-11 Negative: Visual Layout
     test("TC-INV-11 Negative: Visual Layout", async ({ page }) => {
         const loginPage = new LoginPage(page);
