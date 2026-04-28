@@ -1,5 +1,5 @@
 // This file contains Page Object Model for Login Page of Sauce Demo Application
-import { testData } from '../testData.js';
+import { testData } from '../testData.js'
 
 export class LoginPage {
 

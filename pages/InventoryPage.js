@@ -1,4 +1,3 @@
-import { testData } from "../../testData.js";
 import { expect } from '@playwright/test';
 
 export class InventoryPage {
